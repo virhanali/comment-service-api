@@ -1,13 +1,27 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+
+	transportHttp "github.com/virhanali/comment-service-api/internal/transport/http"
+)
+
+// App - the struct which contains things like pointers
+// to database connection
+type App struct{}
 
 
-type App struct {}
-
-
-func (app *App)  Run() error{
+// run -  sets up our connection
+func (app *App) Run() error {
 	fmt.Println("Setting the APP")
+	handler := transportHttp.NewHandler()
+	handler.SetupRoutes()
+
+	if err := http.ListenAndServe(":8080", handler.Router); err != nil {
+		fmt.Println("Failed to set up server")
+		return err
+	}
 	return nil
 }
 
