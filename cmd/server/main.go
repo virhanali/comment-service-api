@@ -4,18 +4,25 @@ import (
 	"fmt"
 	"net/http"
 
-	transportHttp "github.com/virhanali/comment-service-api/internal/transport/http"
+	"github.com/virhanali/comment-service-api/internal/database"
+	transportHTTP "github.com/virhanali/comment-service-api/internal/transport/http"
 )
 
 // App - the struct which contains things like pointers
 // to database connection
 type App struct{}
 
-
 // run -  sets up our connection
 func (app *App) Run() error {
 	fmt.Println("Setting the APP")
-	handler := transportHttp.NewHandler()
+
+	var err error
+	_, err = database.NewDatabase()
+	if err != nil {
+		return err
+	}
+
+	handler := transportHTTP.NewHandler()
 	handler.SetupRoutes()
 
 	if err := http.ListenAndServe(":8080", handler.Router); err != nil {
